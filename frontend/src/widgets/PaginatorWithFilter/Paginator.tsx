@@ -1,5 +1,5 @@
 'use client';
-
+import { Suspense } from 'react';
 import { CarsTable } from '@/entities/cars';
 import { useGetCarsQuery } from '@/features/cars/api/getCars';
 import { IGetCarsQueryParams } from '@/features/cars/model/types';
@@ -61,33 +61,35 @@ export const PaginatorWithFilter = (): JSX.Element => {
   }, [isError]);
 
   return (
-    <VStack
-      mt={'32px'}
-      maxW={'1280px'}
-      p={'16px'}
-      m={'0 auto'}
-      alignItems={'flex-start'}
-      w={'100%'}
-      flexWrap={'wrap'}
-    >
-      <Heading size={'md'}>Марки:</Heading>
-      <MarksTabPanel />
-      <ModelMenuFilter />
-      <CarsTable carList={data?.cars || []} />
-      {data && (
-        <PaginationRoot
-          count={data.totalCars}
-          pageSize={20}
-          page={page}
-          onPageChange={(e) => handlePageChange(e.page)}
-        >
-          <HStack>
-            <PaginationPrevTrigger />
-            <PaginationItems />
-            <PaginationNextTrigger />
-          </HStack>
-        </PaginationRoot>
-      )}
-    </VStack>
+    <Suspense>
+      <VStack
+        mt={'32px'}
+        maxW={'1280px'}
+        p={'16px'}
+        m={'0 auto'}
+        alignItems={'flex-start'}
+        w={'100%'}
+        flexWrap={'wrap'}
+      >
+        <Heading size={'md'}>Марки:</Heading>
+        <MarksTabPanel />
+        <ModelMenuFilter />
+        <CarsTable carList={data?.cars || []} />
+        {data && (
+          <PaginationRoot
+            count={data.totalCars}
+            pageSize={20}
+            page={page}
+            onPageChange={(e) => handlePageChange(e.page)}
+          >
+            <HStack>
+              <PaginationPrevTrigger />
+              <PaginationItems />
+              <PaginationNextTrigger />
+            </HStack>
+          </PaginationRoot>
+        )}
+      </VStack>
+    </Suspense>
   );
 };
