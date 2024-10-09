@@ -4,7 +4,7 @@ const isProduction =
 
 export const API_PATH = {
   BASE: isProduction
-    ? 'https://yt-subtitles-parser.vercel.app/api'
+    ? 'https://pagination-test-task.vercel.app/api'
     : `http://localhost:6050/api`,
   CARS: '/cars',
   MARKS: '/cars/marks',
