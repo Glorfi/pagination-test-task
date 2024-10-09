@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { Cars } from '../db/mongoConnector.js';
+import { NotFound } from '../errors/NotFound.js';
 
 export const getCars = async (
   req: Request,
@@ -16,7 +17,8 @@ export const getCars = async (
     filter.mark = mark;
   }
   if (model) {
-    filter.model = model;
+    const modelsArray = (model as string).split(',');
+    filter.model = { $in: modelsArray };
   }
 
   try {
@@ -35,5 +37,58 @@ export const getCars = async (
     });
   } catch (e) {
     next(e);
+  }
+};
+
+export const getMarks = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const marks = await Cars.aggregate([
+      {
+        $group: {
+          _id: '$mark',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          mark: '$_id',
+          count: 1,
+        },
+      },
+    ]);
+    res.send(marks);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMarkModels = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { mark } = req.params;
+
+  try {
+    // Поиск автомобилей по марке
+    const cars = await Cars.find({ mark }).select('model -_id');
+
+    // Если автомобили не найдены
+    if (cars.length === 0) {
+      throw new NotFound('No models found for this mark');
+    }
+
+    // Извлечение моделей из результата
+    const models = Array.from(new Set(cars.map((car) => car.model)));
+
+    // Возврат массива моделей
+    return res.send(models);
+  } catch (error) {
+    next(error);
   }
 };

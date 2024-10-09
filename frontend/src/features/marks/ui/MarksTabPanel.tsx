@@ -5,9 +5,10 @@ import { useGetMarksQuery } from '../api/getMarks';
 import { SkeletonText } from '@/shared/ui/skeleton';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
+import { toaster } from '@/shared/ui/toaster';
 
 export const MarksTabPanel = (): JSX.Element => {
-  const { data: marks, error, isLoading } = useGetMarksQuery();
+  const { data: marks, isError, isLoading } = useGetMarksQuery();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -17,8 +18,12 @@ export const MarksTabPanel = (): JSX.Element => {
     const newSearchParams = new URLSearchParams(searchParams);
     if (currentMark === mark) {
       newSearchParams.delete('mark');
+      newSearchParams.set('page', '1');
+      newSearchParams.delete('model');
     } else {
       newSearchParams.set('mark', mark);
+      newSearchParams.set('page', '1');
+      newSearchParams.delete('model');
     }
 
     router.push(`?${newSearchParams.toString()}`);
@@ -27,6 +32,15 @@ export const MarksTabPanel = (): JSX.Element => {
   useEffect(() => {
     console.log(currentMark);
   }, [currentMark]);
+
+  useEffect(() => {
+    if (isError) {
+      toaster.create({
+        type: 'error',
+        title: 'Что-то пошло не так, попробуйте еще раз!',
+      });
+    }
+  }, [isError]);
 
   return (
     <HStack alignItems={'flex-start'} w={'100%'} flexWrap={'wrap'}>

@@ -1,20 +1,18 @@
 import { mainApi } from '@/shared/api/mainApi';
 import { API_PATH } from '@/shared/constants/ApiPaths';
-import { IGetCarsQueryParams, IGetCarsResponse } from '../model/types';
 
 const mainApiEndpoint = mainApi.injectEndpoints({
   endpoints: (builder) => ({
-    getCars: builder.query<IGetCarsResponse, IGetCarsQueryParams>({
-      query: (params) => ({
-        url: `${API_PATH.CARS}`,
+    getModels: builder.query<string[], string>({
+      query: (mark) => ({
+        url: `${API_PATH.CARS}/${mark}/models`,
         headers: {
           'Content-Type': 'application/json',
         },
         method: 'GET',
-        params
       }),
     }),
   }),
 });
 
-export const { useGetCarsQuery } = mainApiEndpoint;
+export const { useLazyGetModelsQuery } = mainApiEndpoint;

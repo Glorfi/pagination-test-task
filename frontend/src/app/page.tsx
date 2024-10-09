@@ -1,4 +1,5 @@
 import { Button } from '@/shared/ui/button';
+import { Toaster } from '@/shared/ui/toaster';
 import { PaginatorWithFilter } from '@/widgets';
 import { HStack } from '@chakra-ui/react';
 import Image from 'next/image';
@@ -18,6 +19,7 @@ export default function Home() {
         Pagination Full Stack Test Task
       </HStack>
       <PaginatorWithFilter />
+      <Toaster />
     </main>
   );
 }
